@@ -1,4 +1,4 @@
 # SQN
 Sampled Quasi-Newton Methods for Deep Learning
 
-## ====== This project is under development ======
+# The Code will be released on 10th of February 2019!!!
