@@ -16,3 +16,9 @@ By default, the code is running in the training mode on a single gpu. For runnin
 python main.py
 ```
 
+
+The list of specific parameters are available in the ``parameters.py`` file.
+
+
+### Logs
+All logs are stored in ``.pkl`` file in ``./_saved_log_files`` directory.
