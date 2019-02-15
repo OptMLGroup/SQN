@@ -2,6 +2,8 @@
 
 Authors: [Albert S. Berahas](https://sites.google.com/a/u.northwestern.edu/albertsberahas/home), Majid Jahani and Martin Takáč
 
+Please contact us if you have any questions, suggestions, requests or bug-reports.
+
 ## Paper
 Implementation of our paper: [Quasi-Newton Methods for Deep Learning: Forget the Past, Just Sample](https://arxiv.org/abs/1901.09997). 
 
