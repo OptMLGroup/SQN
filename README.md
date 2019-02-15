@@ -1,5 +1,7 @@
 # Sampled Quasi-Newton Methods for Deep Learning
 
+Authors: [Albert S. Berahas](https://sites.google.com/a/u.northwestern.edu/albertsberahas/home), Majid Jahani and Martin Takáč
+
 ## Paper
 Implementation of our paper: [Quasi-Newton Methods for Deep Learning: Forget the Past, Just Sample](https://arxiv.org/abs/1901.09997). 
 
