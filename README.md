@@ -49,6 +49,10 @@ All logs are stored in ``.pkl`` files in ``./_saved_log_files`` directory. The d
 
 ## Example
 
+Here, we provide a working example of how to use the SQN code. We first describe and set-up a toy problem, and then illustrate how to run the S-LBFGS and S-LSR1 method.
+
+In general, to solve a problem using SQN, the user must...
+
 ### Problem
 
 ### Sampled LBFGS (S-LBFGS)
