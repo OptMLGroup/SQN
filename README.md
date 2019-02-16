@@ -31,27 +31,29 @@ python main.py
 
 By default, the code is running in the training mode on a single GPU.
 
-
 ### Dependencies
 * Numpy
 * [tensorflow](https://www.tensorflow.org/)>=1.2
 
-
-
-
-## How to Run
-### Train
-By default, the code is running in the training mode on a single gpu. For running the code, one can use the following command:
-```bash
-python main.py
-```
-
+### Parameters
+The hyperparameters for the methods are:
+- asdf
+- asdf
 
 The list of specific parameters are available in the ``parameters.py`` file.
 
-
 ### Logs
-All logs are stored in ``.pkl`` file in ``./_saved_log_files`` directory.
+All logs are stored in ``.pkl`` files in ``./_saved_log_files`` directory. The default outputs are:
+- Iteration counter,
+- Function value,
+
+## Example
+
+### Problem
+
+### Sampled LBFGS (S-LBFGS)
+
+### Sampled LSR1 (S-LSR1)
 
 ## Paper
 [Quasi-Newton Methods for Deep Learning: Forget the Past, Just Sample](https://arxiv.org/abs/1901.09997). 
