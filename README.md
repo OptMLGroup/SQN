@@ -6,8 +6,8 @@ Please contact us if you have any questions, suggestions, requests or bug-report
 
 ## Introduction
 This is a Python software package for solving Deep Learning problems using sampled quasi-Newton methods. More specifically, the user can select one of two methods:
-- sampled LBFGS,
-- sampled LSR1.
+- sampled LBFGS (S-LBFGS),
+- sampled LSR1 (S-LSR1).
 
 See [paper](https://arxiv.org/abs/1901.09997) for details.
 
@@ -29,7 +29,7 @@ The algorithms can be run using the syntax:
 python main.py
 ```
 
-By default, the code is running in the training mode on a single GPU.
+By default, the code runs on a single GPU.
 
 ### Dependencies
 * Numpy
