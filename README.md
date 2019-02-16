@@ -33,7 +33,7 @@ By default, the code runs on a single GPU.
 
 ### Dependencies
 * Numpy
-* [tensorflow](https://www.tensorflow.org/)>=1.2
+* [TensorFlow](https://www.tensorflow.org/)>=1.2
 
 ### Parameters
 The hyperparameters for the methods are:
