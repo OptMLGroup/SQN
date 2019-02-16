@@ -42,6 +42,9 @@ The hyperparameters for the methods are:
 
 The list of specific parameters are available in the ``parameters.py`` file.
 
+### Functions
+In order to run the code, one needs the following functions:
+
 ### Logs
 All logs are stored in ``.pkl`` files in ``./_saved_log_files`` directory. The default outputs are:
 - Iteration counter,
