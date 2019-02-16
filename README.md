@@ -12,6 +12,19 @@ Implementation of our paper: [Quasi-Newton Methods for Deep Learning: Forget the
 * Numpy
 * [tensorflow](https://www.tensorflow.org/)>=1.2
 
+## Citation
+If you use SQN for your research, please cite:
+
+```
+@article{berahas2019quasi,
+  title={Quasi-Newton Methods for Deep Learning: Forget the Past, Just Sample},
+  author={Berahas, Albert S and Jahani, Majid and Tak{\'a}{\v{c}}, Martin},
+  journal={arXiv preprint arXiv:1901.09997},
+  year={2019}
+}
+```
+
+
 ## How to Run
 ### Train
 By default, the code is running in the training mode on a single gpu. For running the code, one can use the following command:
