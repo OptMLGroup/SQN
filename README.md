@@ -25,9 +25,10 @@ If you use SQN for your research, please cite:
 
 ## Usage Guide
 The algorithms can be run using the syntax:
-```bash
-python main.py
+```bash 
+python main.py method
 ```
+where ```method=SLBFGS``` or ```method=SLSR1```
 
 By default, the code runs on a single GPU.
 
