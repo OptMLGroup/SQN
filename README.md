@@ -24,13 +24,15 @@ If you use SQN for your research, please cite:
 ```
 
 ## Usage Guide
-The algorithms can be run using the syntax 
+The algorithms can be run using the syntax:
 ```bash
 python main.py
 ```
 
+By default, the code is running in the training mode on a single GPU.
 
-## Dependencies
+
+### Dependencies
 * Numpy
 * [tensorflow](https://www.tensorflow.org/)>=1.2
 
