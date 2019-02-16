@@ -1,4 +1,4 @@
-# Sampled Quasi-Newton Methods for Deep Learning
+# SQN: Sampled Quasi-Newton Methods for Deep Learning
 
 Authors: [Albert S. Berahas](https://sites.google.com/a/u.northwestern.edu/albertsberahas/home), [Majid Jahani](http://coral.ise.lehigh.edu/maj316/) and [Martin Takáč](http://mtakac.com/)
 
