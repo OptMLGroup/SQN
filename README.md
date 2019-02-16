@@ -5,19 +5,11 @@ Authors: [Albert S. Berahas](https://sites.google.com/a/u.northwestern.edu/alber
 Please contact us if you have any questions, suggestions, requests or bug-reports.
 
 ## Introduction
-This is a package for solving Deep Learning problems using sampled quasi-Newton methods. More specifically, the user can select one of two methods:
+This is a Python software package for solving Deep Learning problems using sampled quasi-Newton methods. More specifically, the user can select one of two methods:
 - sampled LBFGS,
 - sampled LSR1.
 
 See [paper](https://arxiv.org/abs/1901.09997) for details.
-
-## Paper
-Implementation of our paper: [Quasi-Newton Methods for Deep Learning: Forget the Past, Just Sample](https://arxiv.org/abs/1901.09997). 
-
-
-## Dependencies
-* Numpy
-* [tensorflow](https://www.tensorflow.org/)>=1.2
 
 ## Citation
 If you use SQN for your research, please cite:
@@ -30,6 +22,15 @@ If you use SQN for your research, please cite:
   year={2019}
 }
 ```
+
+
+
+
+## Dependencies
+* Numpy
+* [tensorflow](https://www.tensorflow.org/)>=1.2
+
+
 
 
 ## How to Run
@@ -45,3 +46,7 @@ The list of specific parameters are available in the ``parameters.py`` file.
 
 ### Logs
 All logs are stored in ``.pkl`` file in ``./_saved_log_files`` directory.
+
+## Paper
+[Quasi-Newton Methods for Deep Learning: Forget the Past, Just Sample](https://arxiv.org/abs/1901.09997). 
+
