@@ -23,7 +23,11 @@ If you use SQN for your research, please cite:
 }
 ```
 
-
+## Usage Guide
+The algorithms can be run using the syntax 
+```bash
+python main.py
+```
 
 
 ## Dependencies
