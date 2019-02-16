@@ -50,6 +50,8 @@ All logs are stored in ``.pkl`` files in ``./_saved_log_files`` directory. The d
 - Iteration counter,
 - Function value,
 
+### Output printing
+
 ## Example
 
 Here, we provide a working example of how to use the SQN code. We first describe and set-up a toy problem, and illustrate how to run the S-LBFGS and S-LSR1 method. We then describe how one could use our code to solve different problems.
