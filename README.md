@@ -37,7 +37,7 @@ By default, the code runs on a single GPU.
 
 ### Parameters
 The hyperparameters for the methods are:
-- asdf
+- Initial trust region radius ```init_TR``` (default ```init_TR = 1```)
 - asdf
 
 The list of specific parameters are available in the ``parameters.py`` file.
