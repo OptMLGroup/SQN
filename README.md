@@ -11,6 +11,9 @@ This is a Python software package for solving Deep Learning problems using sampl
 
 See [paper](https://arxiv.org/abs/1901.09997) for details.
 
+## Problem
+The problem we are solving is...
+
 ## Citation
 If you use SQN for your research, please cite:
 
@@ -37,9 +40,22 @@ By default, the code runs on a single GPU.
 * [TensorFlow](https://www.tensorflow.org/)>=1.2
 
 ### Parameters
+The parameters for the problem are:
+
+
 The hyperparameters for the methods are:
+- Random seed
+- Maximum number of iterations
+- Memory length
+- Sampling radius
+- Tolerance for updating QN matrices
+- TR tolerance
 - Initial trust region radius ```init_TR``` (default ```init_TR = 1```)
-- asdf
+- Initial step length
+- Tolerance of CG Steinhaug
+- Armijo sufficient decrease parameter
+- Armijo backtracking factor
+- Initial sampling SLBFGS
 
 The list of specific parameters are available in the ``parameters.py`` file.
 
@@ -59,7 +75,7 @@ Here, we provide a working example of how to use the SQN code. We first describe
 
 In general, to solve a problem using SQN, the user must...
 
-### Problem
+
 
 ### Sampled LBFGS (S-LBFGS)
 
