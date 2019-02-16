@@ -8,6 +8,7 @@ Please contact us if you have any questions, suggestions, requests or bug-report
 This is a package for solving Deep Learning problems using sampled quasi-Newton methods. More specifically, the user can select one of two methods:
 - sampled LBFGS,
 - sampled LSR1.
+
 See [paper](https://arxiv.org/abs/1901.09997) for details.
 
 ## Paper
