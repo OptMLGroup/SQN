@@ -76,7 +76,7 @@ In this section we describe all the functions needed to run the code. For both m
 - ```main.py```: This is the main file that runs the code for both methods. For each method: (1) gets the input parameters required (```parameters.py```), (2) gets the data for the **sin classification problem** (```data_generation.py```), (3) constructs the neural network (```network.py```), and (4) runs the method (```S_LBFGS.py``` or ```S_LSR1.py```).
 -```parameters.py```: Sets all the parameters.
 -```data_generation.py```: Generates the data.
-- ```network.py```: Constructs the neural network.
+- ```network.py```: Constructs the neural network (function, gradient, Hessian and Hessian-vector products).
 - ```S_LBFGS.py```, ```S_LSR1.py```: Runs the **S-LBFGS** and **S-LSR1** methods, respectively.
 
 Each method has several method specific functions. For **S-LBFGS**:
@@ -147,6 +147,10 @@ The output of the first 10 iterations is:
 ```
 
 ### Other problems
+
+In order for a user to run the **S-LBFGS** and **S-LSR1** methods on different problems, there are a few things that must be modified: (1) the parameters of the neural network (Network size in ```parameters.py```), (2) the data (in ```data_generation.py```), and (3) the network (in ```network.py```). 
+
+If users have any issues, please contact us.
 
 ## Paper
 [Quasi-Newton Methods for Deep Learning: Forget the Past, Just Sample](https://arxiv.org/abs/1901.09997). 
