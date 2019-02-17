@@ -144,7 +144,7 @@ The output of the first 10 iterations is:
 
 ### Other problems
 
-In order for a user to run the **S-LBFGS** and **S-LSR1** methods on different problems, there are a few things that must be modified: (1) the parameters of the neural network (Network size in ```parameters.py```), (2) the data (in ```data_generation.py```), and (3) the network (in ```network.py```). More specifically, a user need to construct or load his/her own data in the ```main.py``` function and then define a neural network in the ```DNN``` class to be used in ```network.py```. The latter also calculates Hessian, gradient, and Hessian-matrix product with respect to the new function; also it cointans the operators for updating, assigning and adding the parameters of the new network. 
+In order for a user to run the **S-LBFGS** and **S-LSR1** methods on different problems, there are a few things that must be modified: (1) the parameters of the neural network (Network size in ```parameters.py```), (2) the data (in ```data_generation.py```), and (3) the network (in ```network.py```). More specifically, a user need to construct or load his/her own data in the ```main.py``` function and then define a neural network in the ```DNN``` class to be used in ```network.py```. The latter also calculates Hessian (```H```), gradient (```G```), and Hessian-matrix product(```Hvs```) with respect to the new function; also it cointans the operators for updating (```updateOp```), assigning (```ASSIGN_OP```) and adding (```assign_add```) the parameters of the new network. 
 
 
 
