@@ -7,14 +7,15 @@ Please contact us if you have any questions, suggestions, requests or bug-report
 ## Introduction
 This is a Python software package for solving a toy classification problem using neural networks. More specifically, the user can select one of two methods:
 - sampled LBFGS (S-LBFGS),
-- sampled LSR1 (S-LSR1).
+- sampled LSR1 (S-LSR1),
 
-See [paper](https://arxiv.org/abs/1901.09997) for details.
+to solve the problem described below. See [paper](https://arxiv.org/abs/1901.09997) for details.
 
 Note, the code is extendible to solving other deep learning problems (see comments below).
 
 ## Problem
-The problem we are solving is...
+Consider the following simple classification problem, illustrated in the figure below, consisting of two classes each with 50 data points. We trained a small fully conncted neural network with sigmoid activation functions and 4 hidden layers with 2 nodes in each layer.
+
 <img src="https://user-images.githubusercontent.com/17861925/52918364-18a5ab00-32c4-11e9-8486-0f5a4cc97178.png" width="450" height="300">
 
 ## Citation
