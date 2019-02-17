@@ -6,15 +6,15 @@ Please contact us if you have any questions, suggestions, requests or bug-report
 
 ## Introduction
 This is a Python software package for solving a toy classification problem using neural networks. More specifically, the user can select one of two methods:
-- sampled LBFGS (S-LBFGS),
-- sampled LSR1 (S-LSR1),
+- **sampled LBFGS (S-LBFGS)**,
+- **sampled LSR1 (S-LSR1)**,
 
 to solve the problem described below. See [paper](https://arxiv.org/abs/1901.09997) for details.
 
 Note, the code is extendible to solving other deep learning problems (see comments below).
 
 ## Problem
-Consider the following simple classification problem, illustrated in the figure below, consisting of two classes each with 50 data points. We trained a small fully conncted neural network with sigmoid activation functions and 4 hidden layers with 2 nodes in each layer.
+Consider the following simple classification problem, illustrated in the figure below, consisting of two classes each with 50 data points. We call this the **sin classification problem**. We trained a small fully conncted neural network with sigmoid activation functions and 4 hidden layers with 2 nodes in each layer.
 
 <img src="https://user-images.githubusercontent.com/17861925/52918364-18a5ab00-32c4-11e9-8486-0f5a4cc97178.png" width="450" height="300">
 
@@ -44,27 +44,51 @@ By default, the code runs on a single GPU.
 * [TensorFlow](https://www.tensorflow.org/)>=1.2
 
 ### Parameters
-The parameters for the problem are:
+In this section we describe all the parameters needed to run the methods on the **sin classification problem**. The list of all parameters is available in the ``parameters.py`` file.
 
+The parameters for the **problem** are:
+- ```num_pts```: Number of data points (per class)  (default ```num_pts = 50```)
+- ```freq```: Frequency (default ```freq = 8```)
+- ```offset```: Offset (default ```offset = 0.8```)
+- ```activation```: Activation (default ```activation = "sigmoid"```)
+- ```FC1```, ```FC2```,..., ```FC6```: Network size (number of nodes in each hidden layer) (default all equation to ```2```)
 
-The hyperparameters for the methods are:
-- Random seed
-- Maximum number of iterations
-- Memory length
-- Sampling radius
-- Tolerance for updating QN matrices
-- TR tolerance
-- Initial trust region radius ```init_TR``` (default ```init_TR = 1```)
-- Initial step length
-- Tolerance of CG Steinhaug
-- Armijo sufficient decrease parameter
-- Armijo backtracking factor
-- Initial sampling SLBFGS
+All these parameters can be changed in ```parameters.py```. Note that ```FC1``` and ```FC6``` should both be equal to ```2``` since this is the input and output size.
 
-The list of specific parameters are available in the ``parameters.py`` file.
+The hyperparameters for the **methods** are:
+- ```seed```: Random seed (default ```seed = 67```)
+- ```numIter```: Maximum number of iterations (default ```numIter = 1000```)
+- ```mmr```: Memory length (default ```mmr = 10```)
+- ```radius```: Sampling radius (default ```radius = 1```)
+- ```eps```: Tolerance for updating QN matrices  (default ```eps = 1e-8```)
+- ```eta```: TR tolerance (default ```eta = 1e-6```)
+- ```delta_init```: Initial trust region radius  (default ```delta_init = 1```)
+- ```alpha_init```: Initial step length  (default ```alpha_init = 1```)
+- ```epsTR```: Tolerance of CG Steinhaug  (default ```epsTR = 1e-10```)
+- ```cArmijo```: Armijo sufficient decrease parameter (default ```cArmijo = 1e-4```)
+- ```rhoArmijo```: Armijo backtracking factor (default ```rhoArmijo = 0.5```)
+- ```init_sampling_SLBFGS```: Initial sampling SLBFGS (default ```init_sampling_SLBFGS = "on"```)
+
+All these parameters can be changed in ```parameters.py```.
 
 ### Functions
-In order to run the code, one needs the following functions:
+In this section we describe all the functions needed to run the code. For both methods:
+- ```main.py```: This is the main file that runs the code for both methods. For each method: (1) gets the input parameters required (```parameters.py```), (2) gets the data for the **sin classification problem** (```data_generation.py```), (3) constructs the neural network (```network.py```), and (4) runs the method (```S_LBFGS.py``` or ```S_LSR1.py```).
+-```parameters.py```: Sets all the parameters.
+-```data_generation.py```: Generates the data.
+- ```network.py```: Constructs the neural network.
+- ```S_LBFGS.py```, ```S_LSR1.py```: Runs the **S-LBFGS** and **S-LSR1** methods, respectively.
+
+Each method has several method specific functions. For **S-LBFGS**:
+- ```L_BFGS_two_loop_recursion.py```: LBFGS two-loop recursion for computing the search direction.
+- ```sample_pairs_SY_SLBFGS.py```: Function for computing ```S```, ```Y``` curvature pairs.
+
+For **S-LSR1**:
+- ```CG_Steinhaug_matFree.py```: CG Steinhaug method for solving the TR subproblem and computing the search direction.
+- ```rootFinder.py```: Root finder subroutine used in the CG Steinhaug method.
+- ```sample_pairs_SY_SLSR1.py```: Function for computing ```S```, ```Y``` curvature pairs.
+
+The ```sample_pairs_SY_SLBFGS.py``` and ```sample_pairs_SY_SLSR1.py``` functions are in the ```sampleSY.py``` file. The rest of the functions are found in the ```util_func.py```.
 
 ### Logs
 All logs are stored in ``.pkl`` files in ``./_saved_log_files`` directory. The default outputs are:
