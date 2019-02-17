@@ -69,7 +69,7 @@ class parameters :
         self.eps = 1e-8           # tolerance for updating quasi-Newton matrices
         self.eta = 1e-6           # tolerance for ared/pred reduction in TR
         self.delta_init = 1       # initial TR radius
-        self.alpha_init = 2       # initial step length
+        self.alpha_init = 1       # initial step length
         self.epsTR = 1e-10        # tolernace for CG_Steinhaug
         self.cArmijo = 1e-4       # Armijo sufficient decrease parameter
         self.rhoArmijo = .5       # Armijo backtracking factor
