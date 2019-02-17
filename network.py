@@ -22,39 +22,17 @@ def weight_variable(shape, std=0.1):
     initial = tf.truncated_normal(shape, stddev=std, dtype=tf.float64)
     return tf.Variable(initial,dtype=tf.float64)
 
-# ==========================================================================
-def bias_variable(shape, initVal=0.1):
-    initial = tf.constant(initVal, shape=shape)
-    return tf.Variable(initial)
-
-# ==========================================================================
-def conv2d(x, W):
-    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
-
-# ==========================================================================
-def max_pool_2x2(x):
-    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
-                        strides=[1, 2, 2, 1], padding='SAME')
-
-# ==========================================================================
-def getLogFileName(alg,nv, seed,freq, offset, bs=None,activation="sigmoid",extrascale=1.0, lr=None):
-    if activation=="sigmoid":
-        a=""
-    else:
-        a="_"+activation
-        
-    if lr is None:
-        b=""
-    else:
-        b="_lr_"+str(lr)
-    
-    return "logs/LOG_"+alg+"_"+str(freq)+"_"+str(offset)+"_"+str(nv)+"_"+str(seed)+"_"+str(bs)+"_"+str(extrascale)+a+b+".pkl"
-    
-
 
 # ==========================================================================
 class DNN:
-    
+    """This class constructs the network used.
+    The inputs are: (1) sizeNet (total number of weights, 
+    and (2) activation. 
+    Note, that for this code, we fix the network to have
+    6 fully connected layers, with varying number of nodes.
+    Moreover, we concatenate the weight matrices into a long
+    vector as this allows for easier implementation of our 
+    methods."""
     def __init__(self,hiddenSizes,activation="sigmoid"):
 
         x = tf.placeholder(tf.float64, shape=[None, 2])
@@ -91,10 +69,7 @@ class DNN:
         W6 = tf.reshape(tf.stack(  uparam[sum(sizes[0:10]):sum(sizes[0:10])+sizes[10]] ), shape=[FC5, FC6])
         b6 = tf.reshape(tf.stack(  uparam[sum(sizes[0:11]):sum(sizes[0:11])+sizes[11]] ), shape=[FC6])
 
-
-
         Ws = [W1,W2,W3,W4,W5,W6]
-
         bs = [b1,b2,b3,b4,b5,b6]
         
         
@@ -112,13 +87,15 @@ class DNN:
         a5 = acf(tf.matmul(a4, W5) + b5)
         a6 = (tf.matmul(a5, W6) + b6)
 
-
-        output = a6 # tf.nn.sigmoid(a6)
-        probdist = tf.nn.softmax(a6)
-        cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=output))
-
-        correct_prediction = tf.equal(tf.argmax(a6, 1), tf.argmax(y_,1))
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        
+        #-----------------------------------------------
+        #----------- Function, Gradient, Hessian, Accuracy and Other Operators --------------
+        #-----------------------------------------------
+        output = a6                               # Output of network
+        probdist = tf.nn.softmax(output)              # Softmax of output layer 
+        cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=output))        # Cross entropy loss
+        correct_prediction = tf.equal(tf.argmax(a6, 1), tf.argmax(y_,1))                 
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))             # Accuracy computation
 
         self.output= output
         self.probdist=probdist
@@ -131,24 +108,8 @@ class DNN:
         self.correct_prediction = correct_prediction
         self.params = params
         
-        self.updateVal = tf.placeholder(tf.float64, shape=[int(params.shape[0]),1])
-        self.updateOp = tf.assign_add(params, self.updateVal).op
-        self.setOp = tf.assign(self.params, self.updateVal).op
-        self.G = tf.gradients(cross_entropy,params)
-        self.H = tf.hessians(cross_entropy,params)
-        self.ASSIGN_OP = tf.assign(self.params, self.updateVal).op
-        
-    
-    def chooseRandomIntialPoint(self,sess,seed=47, extrascale=1.0):
-        np.random.seed(seed)
-        xavier = []
-        for ww, bb in zip(self.Ws,self.bs):
-            scale = ww.shape[1]+ww.shape[0]
-            scale = 2.0 / float(str(scale))
-            scale = np.sqrt(scale)*extrascale
-            rd =  np.reshape(np.random.randn(ww.shape[0],ww.shape[1])*scale,[-1])
-            rb =  np.zeros(bb.shape)
-            xavier = xavier + rd.tolist() 
-            xavier = xavier + rb.tolist()
-        xavier = np.reshape(np.array(xavier),[-1,1])
-        kkk = sess.run(self.params.assign(xavier))    
+        self.updateVal = tf.placeholder(tf.float64, shape=[int(params.shape[0]),1])      # Placeholder for updating parameters 
+        self.updateOp = tf.assign_add(params, self.updateVal).op                         # Operator for updating parameters  
+        self.G = tf.gradients(cross_entropy,params)                                      # Gradient computation
+        self.H = tf.hessians(cross_entropy,params)                                       # Hessian computation
+        self.ASSIGN_OP = tf.assign(self.params, self.updateVal).op                       # Operator for assigning parameters

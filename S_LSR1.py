@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/enum_weights python
 # -*- coding: utf-8 -*-
 # Copyright (C) 2019 Albert Berahas, Majid Jahani, Martin Takáč
 # 
@@ -23,126 +23,94 @@ import time
 from util_func import *
 from network import *
 from data_generation import *
+from sampleSY import *
 
 # ==========================================================================
-def S_LSR1(freq,offset,activation,sizeNet,w,seedd,numIter,mmr,radius,eps,eta,deltakk,epsTR,GPUnumber,nv):
-    """Sampled LSR1 method."""    
-    X,Y,y = getData(50,freq, offset)
-    os.environ["CUDA_VISIBLE_DEVICES"] =  GPUnumber 
-    sess = tf.InteractiveSession()
-    dnn = DNN(sizeNet,activation)
-    w = np.reshape(w,(nv,1))
-    sess.run(dnn.params.assign(w))
-    np.random.seed(seedd)
-    print "Norm of initial point is: ", LA.norm(w)
-    numFunEval = 0
+def S_LSR1(w_init,X,y,seed,numIter,mmr,radius,eps,eta,delta_init,epsTR,num_weights,dnn,sess):
+    """Sampled LSR1 method."""       
+    
+    w = w_init
+    sess.run(dnn.params.assign(w))                        # Assign initial weights to parameters of the network
+    np.random.seed(seed)                                  # Set random seed
+    
+    numFunEval = 0                                        # Initialize counters (function values, gradients and Hessians)
     numGradEval = 0
     numHessEval = 0
-    deltak = 1
+    
+    deltak = delta_init                                   # Initialize trust region radius
 
-    HISTORY = []
-    varSR1sampled = []
+    HISTORY = []                                          # Initialize array for storage
+    weights_SLSR1 = []                                    # Initialize array for storing weights           
 
-    k=0
-    counter = 0
-    st = time.time()
+    k=0                                                   # Initialize iteration counter   
+    st = time.time()                                      # Start the timer
 
-    S = np.zeros((nv,mmr))
-    Y = np.zeros((nv,mmr))
-    counterSucc = 0
-    objFunOld = sess.run(dnn.cross_entropy,feed_dict={dnn.x: X, dnn.y:y})
+    objFunOld = sess.run(dnn.cross_entropy,feed_dict={dnn.x: X, dnn.y:y})    # Compute function value at current iterate
     numFunEval += 1
+    
+    print objFunOld
+    
+    # Method while loop (terminate after numIter or Accuracy 1 achieved)
     while 1:
         gradTemp, acc, xOld = sess.run([dnn.G,dnn.accuracy,dnn.params], 
-                                                 feed_dict={dnn.x: X, dnn.y:y})
+                         feed_dict={dnn.x: X, dnn.y:y})                      # Compute gradient and accuracy
         gard_k = gradTemp[0]
         numGradEval += 1
         norm_g = LA.norm(gard_k)
 
-        Hess_xNew = np.squeeze(sess.run(dnn.H, feed_dict={dnn.x: X, dnn.y:y}))
+        # Sample S, Y pairs
+        S,Y,counterSucc,numHessEval = sample_pairs_SY_SLSR1(X,y,num_weights,mmr,radius,eps,dnn,numHessEval,sess)
 
-        Stemp = np.random.randn(nv,mmr)
-        Ytemp = np.matmul(Hess_xNew,Stemp) # nv*mmr matrix
-        numHessEval += 1
-        S = np.zeros((nv,0))
-        Y = np.zeros((nv,0))
-
-        for idx in xrange(mmr):        
-
-          L = np.zeros((Y.shape[1],Y.shape[1]))
-          for ii in xrange(Y.shape[1]):
-             for jj in range(0,ii): 
-                    L[ii,jj] = S[:,ii].dot(Y[:,jj])
-
-
-          tmp = np.sum((S * Y),axis=0)
-          D = np.diag(tmp)
-          M = (D + L + L.T)
-          Minv = np.linalg.inv(M)        
-
-          tmp1 = np.matmul(Y.T,Stemp[:,idx])
-          tmp2 = np.matmul(Minv,tmp1)
-          Bksk = np.squeeze(np.matmul(Y,tmp2))
-          yk_BkskDotsk = (  Ytemp[:,idx]- Bksk ).T.dot(  Stemp[:,idx]  )  
-          if np.abs(np.squeeze(yk_BkskDotsk)) > (
-                 eps *(LA.norm(Ytemp[:,idx]- Bksk )  * LA.norm(Stemp[:,idx]))  ):        
-            counterSucc += 1
-
-            S = np.append(S,Stemp[:,idx].reshape(nv,1),axis = 1)
-            Y = np.append(Y,Ytemp[:,idx].reshape(nv,1),axis=1)
-
-
+        # Append to History array
         HISTORY.append([k, objFunOld,acc,norm_g,numFunEval,numGradEval,numHessEval,numFunEval+numGradEval+numHessEval,
                         counterSucc,time.time()-st,deltak])
-        if k > numIter or acc ==1 :
-          print HISTORY[k]
-          break
-        if np.mod(k,1) == 0:
-          print HISTORY[k]
-        varSR1sampled.append(sess.run(dnn.params))
+        print HISTORY[k]                                   # Print History array
+        
+        if k > numIter or acc ==1:                         # Terminate if number of iterations > numIter or Accuracy = 1
+            break
+        
+        weights_SLSR1.append(sess.run(dnn.params))        # Append weights
 
 
-        sk_TR = CG_Steinhaug_matFree(epsTR, gard_k , deltak,S,Y,nv) 
-        sess.run(dnn.ASSIGN_OP, feed_dict={dnn.updateVal: xOld + sk_TR })
+        sk_TR = CG_Steinhaug_matFree(epsTR, gard_k , deltak,S,Y,num_weights)         # Compute step using CG Steinhaug
+        sess.run(dnn.ASSIGN_OP, feed_dict={dnn.updateVal: xOld + sk_TR })            # Assign new weights
 
-        objFunNew = sess.run(dnn.cross_entropy, feed_dict={dnn.x: X, dnn.y:y})
+        objFunNew = sess.run(dnn.cross_entropy, feed_dict={dnn.x: X, dnn.y:y})       # Compute new function value
         numFunEval += 1
-        ared = objFunOld - objFunNew
+        
+        ared = objFunOld - objFunNew                     # Compute actual reduction             
 
         Lp = np.zeros((Y.shape[1],Y.shape[1]))
         for ii in xrange(Y.shape[1]):
            for jj in range(0,ii): 
                   Lp[ii,jj] = S[:,ii].dot(Y[:,jj])
-
-
         tmpp = np.sum((S * Y),axis=0)
-
         Dp = np.diag(tmpp)
         Mp = (Dp + Lp + Lp.T)
         Minvp = np.linalg.inv(Mp) 
         tmpp1 = np.matmul(Y.T,sk_TR)
         tmpp2 = np.matmul(Minvp,tmpp1)
         Bk_skTR = np.matmul(Y,tmpp2)    
+        pred = -(gard_k.T.dot(sk_TR) + 0.5* sk_TR.T.dot(Bk_skTR))          # Compute predicted reduction
 
-        pred = -(gard_k.T.dot(sk_TR) + 0.5* sk_TR.T.dot(Bk_skTR))
-
+        # Take step 
         if ared/pred > eta:
           xNew = xOld + sk_TR
           objFunOld = objFunNew
         else:
           xNew = xOld
 
+        # Update trust region radius
         if ared/pred > 0.75:
             deltak = 2*deltak
-
         elif ared/pred>=0.1 and ared/pred <=0.75:
           pass # no need to change deltak
         elif ared/pred<0.1:
           deltak = deltak*0.5
 
-        counterSucc = 0
-
-        k += 1 
-        sess.run(dnn.ASSIGN_OP, feed_dict={dnn.updateVal: xNew})
-    pickle.dump( HISTORY, open( "./_saved_log_files/S_LSR1.pkl", "wb" ) )
-  
+        k += 1                                                         # Increment iteration counter
+        sess.run(dnn.ASSIGN_OP, feed_dict={dnn.updateVal: xNew})       # Assign updated weights
+        
+    pickle.dump( HISTORY, open( "./_saved_log_files/S_LSR1.pkl", "wb" ) )                    # Save History in .pkl file
+    # pickle.dump( weights_SLSR1, open( "./_saved_log_files/S_LSR1_weights.pkl", "wb" ) )    # Save Weights in .pkl file
+    

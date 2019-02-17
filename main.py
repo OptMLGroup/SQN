@@ -19,29 +19,40 @@ import pickle
 from S_LSR1 import *
 from S_LBFGS import *
 from parameters import *
+from network import *
+from data_generation import *
 import os.path
+import sys
+
+input1 = sys.argv[1]
+
 
 # ==========================================================================
-def main(opt):
+def main(opt=input1):
+    
     """Call the selected solver with the selected parameters."""    
     if opt == "SLSR1":
-        S_LSR1(cp.freq,cp.offset,cp.activation,cp.sizeNet,w,cp.seed,cp.numIter,cp.mmr,
-               cp.radius,cp.eps,cp.eta,cp.deltak,cp.epsTR,cp.GPUnumber,cp.nv)
+        S_LSR1(w_init,X,y,cp.seed,cp.numIter,cp.mmr,cp.radius,cp.eps,cp.eta,cp.delta_init,cp.epsTR,cp.num_weights,dnn,sess)
     elif opt == "SLBFGS":
-        S_LBFGS(cp.freq,cp.offset,cp.activation,cp.sizeNet,w,cp.seed,cp.numIter,cp.mmr,
-                cp.radius,cp.eps,cp.cArmijo,cp.rhoArmijo,cp.GPUnumber,cp.nv,cp.startWithSampS_LBFGS)
+        S_LBFGS(w_init,X,y,cp.seed,cp.numIter,cp.mmr,
+                cp.radius,cp.eps,cp.alpha_init,cp.cArmijo,cp.rhoArmijo,cp.num_weights,cp.init_sampling_SLBFGS,dnn,sess)
        
-# calling the parameters
+# Get the parameters
 cp = parameters()
 
-cp.seed = 67
+# Create the data
+X,y = getData(cp.num_pts,cp.freq,cp.offset)
 
-# Initial point
+# Create network
+os.environ["CUDA_VISIBLE_DEVICES"] = cp.GPUnumber 
+sess = tf.InteractiveSession()
+dnn = DNN(cp.sizeNet,cp.activation)
+
+# Set the initial point
 np.random.seed(cp.seed)
-w= np.random.randn(cp.nv,1)
+w_init = np.random.randn(cp.num_weights,1)
 
 # ==========================================================================
-
 if __name__ == '__main__':
     """Run the selected solver."""  
-    main("SLBFGS")
+    main()

@@ -23,86 +23,61 @@ import time
 from util_func import *
 from network import *
 from data_generation import *
+from sampleSY import *
 
 # ==========================================================================
-def S_LBFGS(freq,offset,activation,sizeNet,w,seedd,numIter,mmr,radius,eps,cArmijo,rhoArmijo,GPUnumber,nv,startWithSamp):
+def S_LBFGS(w_init,X,y,seed,numIter,mmr,radius,eps,alpha_init,cArmijo,rhoArmijo,num_weights,init_sampling_SLBFGS,dnn,sess):
     """Sampled LBFGS method."""  
-    X,Y,y = getData(50,freq, offset)
-    os.environ["CUDA_VISIBLE_DEVICES"] =  GPUnumber 
-    sess = tf.InteractiveSession()
-    dnn = DNN(sizeNet,activation)
-    w = np.reshape(w,(nv,1))
-    sess.run(dnn.params.assign(w))
-    np.random.seed(seedd)
-    print "Norm of initial point is: ", LA.norm(w)
-    numFunEval = 0
+    
+    w = w_init
+    sess.run(dnn.params.assign(w))                        # Assign initial weights to parameters of the network
+    np.random.seed(seed)                                  # Set random seed
+    
+    print(seed)
+    numFunEval = 0                                        # Initialize counters (function values, gradients and Hessians)
     numGradEval = 0
     numHessEval = 0
-    # Initial value for updating initial Hessian Approx matrix
+    
     gamma_k = 1
 
-    g_kTemp, objFunOldTemp= sess.run( [dnn.G,[dnn.cross_entropy,dnn.accuracy]] , feed_dict={dnn.x: X, dnn.y:y})
+    g_kTemp, objFunOldTemp = sess.run( [dnn.G,[dnn.cross_entropy,dnn.accuracy]] , feed_dict={dnn.x: X, dnn.y:y})
     numFunEval += 1
-    objFunOld = objFunOldTemp[0]
-    acc = objFunOldTemp[1]
-
     numGradEval += 1
+    objFunOld = objFunOldTemp[0]
+    acc = objFunOldTemp[1]  
     g_k = g_kTemp[0]
     norm_g =  LA.norm( g_k ) 
 
-    counter= 0
     HISTORY = []
-    varLBFGSsampled = []
-    minsTy = 0
-    maxsTy = 0
+    weights_SLBFGS = []
+
     k=0
-    alpha = 2
-    alphaa = alpha
     st=time.time()
+    
+    alpha = alpha_init
+
     while 1:
-        varLBFGSsampled.append(sess.run(dnn.params))
+         
+        weights_SLBFGS.append(sess.run(dnn.params))
         
-        if startWithSamp == 0:
-            # just gradient step for k = 0
-            if k == 0:
-              alpha = min(1,1.0/(np.linalg.norm(g_k, ord=1)))
-              pk = g_k
-            else:
-              pk = L_BFGS_two_loop_recursion(g_k,S,Y,k,mmr,gamma_k,nv)
-
-        if startWithSamp == 1:
-            Stmp = np.random.randn(nv,mmr)
-            Hess = np.squeeze(sess.run( [dnn.H] , feed_dict={dnn.x: X, dnn.y:y}))
-            Ytmp = np.matmul(Hess,Stmp)
-            S = np.zeros((nv,0))
-            numHessEval += 1
-            Y = np.zeros((nv,0))
-            sample = 0
-            minsTy = 1e+20
-            maxsTy = 0    
-            for jj in xrange(mmr):
-              sTy = Ytmp[:,jj].T.dot(Stmp[:,jj])
-              if sTy > eps *(LA.norm(Stmp[:,jj])*LA.norm(Ytmp[:,jj])):
-                  if sTy < minsTy:
-                      minsTy = sTy
-                  if sTy > maxsTy:
-                      maxsTy = sTy
-                  gamma_k = np.squeeze((Stmp[:,jj]).T.dot(Ytmp[:,jj])/((Ytmp[:,jj]).T.dot(Ytmp[:,jj])))
-                  S = np.append(S,Stmp[:,jj].reshape(nv,1),axis = 1)
-                  Y = np.append(Y,Ytmp[:,jj].reshape(nv,1),axis=1)
-                  sample += 1
-            pk = L_BFGS_two_loop_recursion(g_k,S,Y,k,mmr,gamma_k,nv)
-
+        HISTORY.append([k, objFunOld,acc,norm_g, numFunEval,numGradEval,numHessEval, numFunEval+numGradEval+numHessEval,
+                        time.time()-st,alpha])
+        
+        print HISTORY[k]                                   # Print History array
+        
+        if k > numIter or acc ==1:                         # Terminate if number of iterations > numIter or Accuracy = 1
+            break
+        
+        if init_sampling_SLBFGS == "off" and k == 0:
+            alpha = min(1,1.0/(np.linalg.norm(g_k, ord=1)))
+            pk = g_k
+        else:
+            S,Y,counterSucc,numHessEval,gamma_k = sample_pairs_SY_SLBFGS(X,y,num_weights,mmr,radius,eps,dnn,numHessEval,sess)
+            pk = L_BFGS_two_loop_recursion(g_k,S,Y,k,mmr,gamma_k,num_weights)
+            alpha = 2*alpha   # change to 2*alpha
 
         mArmijo = -(pk.T.dot(g_k))
-
-        HISTORY.append([k, objFunOld,acc,norm_g, numFunEval,numGradEval,numHessEval, numFunEval+numGradEval+numHessEval,
-                        time.time()-st,minsTy,maxsTy,alphaa])
-        if np.mod(k,1) == 0 or acc ==1:
-          print HISTORY[k]
-
-        if k > numIter or acc ==1 :
-          break    
+        
         x0 = sess.run(dnn.params)
         while 1:
           # params is the updated variable by adding -alpha* pk  to the previous one  
@@ -110,7 +85,7 @@ def S_LBFGS(freq,offset,activation,sizeNet,w,seedd,numIter,mmr,radius,eps,cArmij
 
           objFunNew = sess.run(dnn.cross_entropy, feed_dict={dnn.x: X, dnn.y:y})
           numFunEval += 1
-          if objFunOld < objFunNew-alpha*cArmijo* mArmijo :
+          if objFunOld + alpha*cArmijo* mArmijo < objFunNew :
             sess.run(dnn.ASSIGN_OP, feed_dict={dnn.updateVal: x0})
             alpha = alpha * rhoArmijo
             if alpha < 1e-25:
@@ -119,40 +94,14 @@ def S_LBFGS(freq,offset,activation,sizeNet,w,seedd,numIter,mmr,radius,eps,cArmij
           else:
             break
         objFunOld = objFunNew
-        alphaa = alpha    
-        # xNew is the updated var satisfying in Armijo condition  
+
         xNew, acc, g_k_newTemp = sess.run( [dnn.params,dnn.accuracy, dnn.G] , feed_dict={dnn.x: X, dnn.y:y}) 
         numGradEval += 1
-        g_k_new = g_k_newTemp[0]
-        norm_g =  LA.norm( g_k_new ) 
+        g_k = g_k_newTemp[0]
+        norm_g =  LA.norm( g_k ) 
         k += 1
-        numSamples = mmr
 
-        if startWithSamp == 0:
-            Stmp = np.random.randn(nv,mmr)
-            Hess = np.squeeze(sess.run( [dnn.H] , feed_dict={dnn.x: X, dnn.y:y}))
-            Ytmp = np.matmul(Hess,Stmp)
-            S = np.zeros((nv,0))
-            numHessEval += 1
-            Y = np.zeros((nv,0))
-            sample = 0
-            minsTy = 1e+20
-            maxsTy = 0    
-            for jj in xrange(mmr):
-              sTy = Ytmp[:,jj].T.dot(Stmp[:,jj])
-              if sTy > eps *(LA.norm(Stmp[:,jj])*LA.norm(Ytmp[:,jj])):
-                  if sTy < minsTy:
-                      minsTy = sTy
-                  if sTy > maxsTy:
-                      maxsTy = sTy
-                  gamma_k = np.squeeze((Stmp[:,jj]).T.dot(Ytmp[:,jj])/((Ytmp[:,jj]).T.dot(Ytmp[:,jj])))
-                  S = np.append(S,Stmp[:,jj].reshape(nv,1),axis = 1)
-                  Y = np.append(Y,Ytmp[:,jj].reshape(nv,1),axis=1)
-                  sample += 1
-
-
-        g_k = g_k_new
-#         alpha = alpha*2
-        alpha = 2
         sess.run(dnn.ASSIGN_OP, feed_dict={dnn.updateVal: xNew})
-    pickle.dump( HISTORY, open( "./_saved_log_files/S_LBFGS.pkl", "wb" ) )
+        
+    pickle.dump( HISTORY, open( "./_saved_log_files/S_LBFGS.pkl", "wb" ) )                    # Save History in .pkl file
+    # pickle.dump( weights_SLBFGS, open( "./_saved_log_files/S_LBFGS_weights.pkl", "wb" ) )    # Save Weights in .pkl file
