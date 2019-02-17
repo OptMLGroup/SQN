@@ -15,8 +15,7 @@ Note, the code is extendible to solving other deep learning problems (see commen
 
 ## Problem
 The problem we are solving is...
-
-![](https://user-images.githubusercontent.com/17861925/52918364-18a5ab00-32c4-11e9-8486-0f5a4cc97178.png)
+<img src="https://user-images.githubusercontent.com/17861925/52918364-18a5ab00-32c4-11e9-8486-0f5a4cc97178.png" width="450" height="300">
 
 ## Citation
 If you use SQN for your research, please cite:
