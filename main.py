@@ -46,7 +46,7 @@ X,y = getData(cp.num_pts,cp.freq,cp.offset)
 # Create network
 os.environ["CUDA_VISIBLE_DEVICES"] = cp.GPUnumber 
 sess = tf.InteractiveSession()
-dnn = DNN(cp.sizeNet,cp.activation)
+dnn = DNN(cp.sizeNet,cp.activation,cp.mmr)
 
 # Set the initial point
 np.random.seed(cp.seed)

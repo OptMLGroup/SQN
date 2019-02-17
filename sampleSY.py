@@ -16,14 +16,14 @@
 import numpy as np
 from numpy import linalg as LA
 import tensorflow as tf
+    
 
 def sample_pairs_SY_SLSR1(X,y,num_weights,mmr,radius,eps,dnn,numHessEval,sess):
     """ Function that computes SY pairs for S-LSR1 method"""
-    Hess = np.squeeze(sess.run(dnn.H, feed_dict={dnn.x: X, dnn.y:y}))
-    numHessEval += 1
-    Stemp = radius*np.random.randn(num_weights,mmr)
-    Ytemp = np.matmul(Hess,Stemp) # nv*mmr matrix
 
+    Stemp = radius*np.random.randn(num_weights,mmr)
+    Ytemp = np.squeeze(sess.run([dnn.Hvs], feed_dict={dnn.x: X, dnn.y:y, dnn.vecs: Stemp})).T
+    numHessEval += 1
     S = np.zeros((num_weights,0))
     Y = np.zeros((num_weights,0))
 
@@ -56,11 +56,10 @@ def sample_pairs_SY_SLSR1(X,y,num_weights,mmr,radius,eps,dnn,numHessEval,sess):
 
 def sample_pairs_SY_SLBFGS(X,y,num_weights,mmr,radius,eps,dnn,numHessEval,sess):
     """ Function that computes SY pairs for S-LBFGS method"""
-    Hess = np.squeeze(sess.run( [dnn.H] , feed_dict={dnn.x: X, dnn.y:y}))
-    numHessEval += 1
     
     Stemp = radius*np.random.randn(num_weights,mmr)
-    Ytemp = np.matmul(Hess,Stemp)
+    Ytemp = np.squeeze(sess.run([dnn.Hvs], feed_dict={dnn.x: X, dnn.y:y, dnn.vecs: Stemp})).T
+    numHessEval += 1
     
     S = np.zeros((num_weights,0))
     Y = np.zeros((num_weights,0))

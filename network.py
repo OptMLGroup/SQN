@@ -33,7 +33,7 @@ class DNN:
     Moreover, we concatenate the weight matrices into a long
     vector as this allows for easier implementation of our 
     methods."""
-    def __init__(self,hiddenSizes,activation="sigmoid"):
+    def __init__(self,hiddenSizes,activation="sigmoid",mmr=10):
 
         x = tf.placeholder(tf.float64, shape=[None, 2])
         y_ = tf.placeholder(tf.float64, shape=[None, 2])
@@ -113,3 +113,9 @@ class DNN:
         self.G = tf.gradients(cross_entropy,params)                                      # Gradient computation
         self.H = tf.hessians(cross_entropy,params)                                       # Hessian computation
         self.ASSIGN_OP = tf.assign(self.params, self.updateVal).op                       # Operator for assigning parameters
+        Gradient = self.G[0]
+        self.vecs = tf.placeholder(dtype=tf.float64, shape=[int(self.params.shape[0]), mmr])  #Placeholder for the matrix
+        self.Gv = tf.reshape(Gradient,shape=(1,-1))
+        self.grad_vs =(tf.matmul(self.Gv,self.vecs))
+        self.Hvs = tf.stack([tf.gradients(tm[0], params, stop_gradients=self.vecs) for tm in tf.unstack(self.grad_vs, axis=1) ] )   # Operator for Hessian-matrix product 
+        
