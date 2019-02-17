@@ -31,10 +31,7 @@ If you use SQN for your research, please cite:
 ```
 
 ## Usage Guide
-The algorithms can be run using the syntax:
-```bash 
-python main.py method
-```
+The algorithms can be run using the syntax: ``` python main.py method```
 where ```method = SLBFGS``` or ```method = SLSR1```
 
 By default, the code runs on a single GPU.
@@ -109,7 +106,7 @@ Here, we provide the commands for running the two methods, and the output for th
 
 ### Sampled LBFGS (S-LBFGS)
 
-To run the **S-LBFGS** method the syntax is: ```bash python main.py SLBFGS```
+To run the **S-LBFGS** method the syntax is: ```python main.py SLBFGS```
 
 The output of the first 10 iterations is:
 ```
@@ -128,7 +125,7 @@ The output of the first 10 iterations is:
 
 ### Sampled LSR1 (S-LSR1)
 
-To run the **S-LSR1** method the syntax is: ```bash python main.py SLSR1```
+To run the **S-LSR1** method the syntax is: ```python main.py SLSR1```
 
 The output of the first 10 iterations is:
 ```
