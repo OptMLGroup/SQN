@@ -16,6 +16,8 @@ Note, the code is extendible to solving other deep learning problems (see commen
 ## Problem
 The problem we are solving is...
 
+![SIN_problem](https://github.com/OptMLGroup/SQN/blob/master/SIN_problem.pdf)
+
 ## Citation
 If you use SQN for your research, please cite:
 
