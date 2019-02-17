@@ -5,11 +5,13 @@ Authors: [Albert S. Berahas](https://sites.google.com/a/u.northwestern.edu/alber
 Please contact us if you have any questions, suggestions, requests or bug-reports.
 
 ## Introduction
-This is a Python software package for solving Deep Learning problems using sampled quasi-Newton methods. More specifically, the user can select one of two methods:
+This is a Python software package for solving a toy classification problem using neural networks. More specifically, the user can select one of two methods:
 - sampled LBFGS (S-LBFGS),
 - sampled LSR1 (S-LSR1).
 
 See [paper](https://arxiv.org/abs/1901.09997) for details.
+
+Note, the code is extendible to solving other deep learning problems (see comments below).
 
 ## Problem
 The problem we are solving is...
