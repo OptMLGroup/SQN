@@ -5,18 +5,13 @@ Authors: [Albert S. Berahas](https://sites.google.com/a/u.northwestern.edu/alber
 Please contact us if you have any questions, suggestions, requests or bug-reports.
 
 ## Introduction
-Given a multivariate data set, sparse principal component analysis (SPCA) aims to extract several linear combinations of the variables that together explain the variance in the data as much as possible, while controlling the number of nonzero loadings in these combinations. We consider 8 different optimization formulations for computing a single sparse loading vector:
-- ** 
-- **
-- **
-- **
-- **
-- **
-- **
-- **
+This is a Python software package for solving a toy classification problem using neural networks. More specifically, the user can select one of two methods:
+- **sampled LBFGS (S-LBFGS)**,
+- **sampled LSR1 (S-LSR1)**,
 
-See [paper](https://arxiv.org/abs/1901.09997) for details.
-This is a Python software package and C++  software package for SPCA.
+to solve the problem described below. See [paper](https://arxiv.org/pdf/1212.4137.pdf) for details.
+
+Note, the code is extendible to solving other deep learning problems (see comments below).
 
 ## Problem
 Consider the following simple classification problem, illustrated in the figure below, consisting of two classes each with 50 data points. We call this the **sin classification problem**. We trained a small fully conncted neural network with sigmoid activation functions and 4 hidden layers with 2 nodes in each layer.
